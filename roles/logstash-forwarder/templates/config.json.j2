@@ -1,0 +1,39 @@
+{
+  "network": {
+    "servers": ["{{ logstash_domain }}"],
+    "ssl key": "/etc/pki/private/logstash-forwarder.key",
+    "ssl ca": "/etc/pki/tls/certs/logstash-forwarder.crt",
+    "timeout": 15
+  },
+
+  "files": [
+    {
+      "paths": [
+        "/var/log/messages",
+        "/var/log/auth.log"
+      ],
+      "fields": {"type": "syslog" }
+    }, {
+      "paths": [ 
+        "/var/log/faillog",
+        "/var/log/fail2ban.log"
+      ],
+      "fields": {"type": "fail2ban" }
+    }, {
+      "paths": [ "/var/log/postgresql/pg_log/*.log" ],
+      "fields": { "type": "postgresql" }
+    }, {
+      "paths": [ "-" ],
+      "fields": { "type": "stdin" }
+    }, {
+      "paths": [ "/var/log/nginx/access.log" ],
+      "fields": { "type": "nginx-access" }
+    }, {
+      "paths": [ "/var/log/nginx/error.log" ],
+      "fields": { "type": "nginx-error" }
+    }, {
+      "paths": [ "/var/www/*/log/logstash_production.log" ],
+      "fields": { "type": "rails" }
+    }
+  ]
+}

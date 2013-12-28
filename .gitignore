@@ -1,0 +1,6 @@
+roles/kibana/files/htpasswd
+roles/logstash/files/certs/*.key
+roles/logstash/files/certs/*.crt
+roles/logstash-forwarder/files/certs/*.key
+roles/logstash-forwarder/files/certs/*.crt
+vars/global_vars.yml

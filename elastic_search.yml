@@ -1,0 +1,10 @@
+---
+- hosts: elastic_search
+  user: "{{ user }}"
+  sudo: yes
+
+  vars_files:
+    - vars/global_vars.yml
+
+  roles:
+    - { role: elastic_search }

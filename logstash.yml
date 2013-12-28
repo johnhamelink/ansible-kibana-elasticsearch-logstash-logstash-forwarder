@@ -1,0 +1,10 @@
+---
+- hosts: logstash
+  user: "{{ user }}"
+  sudo: yes
+
+  vars_files:
+    - vars/global_vars.yml
+
+  roles:
+    - { role: logstash }

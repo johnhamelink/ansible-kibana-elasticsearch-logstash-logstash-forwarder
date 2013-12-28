@@ -1,0 +1,37 @@
+---
+
+- name: Ensure SSL certificates have the correct directories
+  file: path=/etc/pki/tls/{{item}} owner=root group=root mode=0755 state=directory
+  with_items:
+    - certs
+    - private
+
+- name: Ensure logstash-forwarder has its config file
+  template: src=config.json.j2 dest=/etc/logstash-forwarder owner=root group=root mode=0755
+  notify:
+  - restart logstash-forwarder
+
+- name: Ensure logstash-forwarder has its SSL certificate
+  copy: src=certs/logstash-forwarder.crt dest=/etc/pki/tls/certs/logstash-forwarder.crt owner=root group=root mode=0755
+
+- name: Ensure logstash-forwarder has its SSL private key
+  copy: src=certs/logstash-forwarder.key dest=/etc/pki/tls/private/logstash-forwarder.key owner=root group=root mode=0755
+
+- name: Copy logstash-forwarder deb file
+  copy: src=logstash-forwarder_0.3.1_amd64.deb dest=/tmp/logstash-forwarder_0.3.1.deb
+
+- name: Install logstash-forwarder
+  shell: dpkg --skip-same-version -i /tmp/logstash-forwarder_0.3.1.deb
+  register: dpkg_result
+
+- name: Restart Logstash
+  when: "dpkg_result.stdout.startswith('Selecting')"
+  service: name=logstash-forwarder state=restarted
+
+- name: copy logstash-forwarder init file
+  copy: src=logstash-forwarder.init dest=/etc/init.d/logstash-forwarder.init owner=root group=root mode=645
+
+- name: Enable logstash-forwarder init file
+  shell: update-rc.d logstash-forwarder defaults
+  notify:
+  - restart logstash-forwarder

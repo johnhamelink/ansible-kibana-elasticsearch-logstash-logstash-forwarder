@@ -1,0 +1,5 @@
+---
+user: ubuntu
+kibana_domain: log.example.com
+kibana_url: https://github.com/elasticsearch/kibana/archive/master.zip
+es_address: http://log.example.com/es/

@@ -1,0 +1,41 @@
+---
+- name: Ensure app apt dependencies are installed
+  apt: pkg={{item}} state=installed
+  with_items:
+    - nginx
+    - unzip
+
+- name: Ensure /var/www/kibana is deleted
+  file: path=/var/www/kibana state=absent
+
+- name: Ensure /var/www/kibana is an empty directory
+  file: path=/var/www/kibana state=directory
+
+- name: Ensure we have the latest release
+  get_url: url={{kibana_url}} dest=/tmp/kibana.zip
+
+- name: Unzip kibana to /var/www
+  shell: unzip /tmp/kibana.zip kibana-master/src/* -d /var/www/
+
+- name: Rename the directory to /var/www/kibana
+  shell: mv /var/www/kibana-master/src/* /var/www/kibana
+
+- name: Clean up old kibana directory
+  shell: rm -rf /var/www/kibana-master
+
+- name: Ensure kibana's nginx site is in place
+  template: src=nginx.conf.j2 dest=/etc/nginx/sites-available/kibana mode=0755
+
+- name: Ensure kibana's htpasswd file is in place
+  copy: src=htpasswd dest=/var/www/htpasswd mode=0644 owner=root group=root
+
+- name: Ensure default nginx site is not enabled
+  file: state=absent path=/etc/nginx/sites-enabled/default
+
+- name: Ensure kibana nginx site is enabled
+  file: state=link src=/etc/nginx/sites-available/kibana path=/etc/nginx/sites-enabled/kibana
+
+- name: Ensure kibana config is in place
+  template: src=config.js.j2 dest=/var/www/kibana/config.js mode=0644 owner=root group=root
+  notify:
+    - restart nginx
