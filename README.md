@@ -4,6 +4,8 @@ kibana, elasticsearch, logstash, logstash-forwarder ansible roles
 Setup
 -----
 
+Start up two clean ubuntu 13.10 x64 servers. One will be for logstash, elastic search and kibana, the other will be for logstash-forwarder.
+
 Generate SSL keys by running:
 
     openssl req -x509 -batch -nodes -newkey rsa:2048 -keyout logstash-forwarder.key -out logstash-forwarder.crt
