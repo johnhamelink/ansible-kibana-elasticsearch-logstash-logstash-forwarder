@@ -42,3 +42,8 @@
   copy: src=certs/logstash-forwarder.key dest=/etc/pki/tls/private/logstash-forwarder.key owner=root group=root mode=0755
   notify:
     - restart logstash
+
+- name: Ensure logstash boots on startup
+  shell: update-rc.d logstash defaults
+  notify:
+    - restart logstash
